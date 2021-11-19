@@ -1,0 +1,5 @@
+.DS_Store
+.scratch
+./test.ts
+node_modules/
+!.keep
