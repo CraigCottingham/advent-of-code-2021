@@ -1,21 +1,37 @@
 {
 	"name": "advent-of-code",
 	"version": "1.0.0",
-	"description": "Trevor Gau's solutions to Advent of Code",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+	"description": "Solutions for Advent of Code",
+	"keywords": [
+		"advent-of-code",
+		"advent-of-code-2021",
+		"typescript"
+	],
+	"homepage": "https://github.com/CraigCottingham/advent-of-code",
+	"bugs": {
+		"url": "https://github.com/CraigCottingham/advent-of-code/issues"
 	},
+	"license": "MIT",
+	"contributors": [
+		{ "author": "Craig Cottingham <craig@cottingham.net> (https://craigcottingham.github.com/)" },
+		{ "author": "Trevor Gau <t-hugs@github.com> (https://github.com/T-Hugs)" }
+	],
+	"main": "index.ts",
+	"bin": {},
+	"man": [],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/T-Hugs/advent-of-code.git"
+		"url": "https://github.com/CraigCottingham/advent-of-code.git"
 	},
-	"author": "Trevor Gau",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/T-Hugs/advent-of-code/issues"
+	"scripts": {
+		"help": "ts-node init.ts -h",
+		"seed": "ts-node init.ts seed",
+		"solve": "ts-node run.ts",
+		"submit": "ts-node submit.ts",
+		"suck": "ts-node init.ts suck",
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"homepage": "https://github.com/T-Hugs/advent-of-code#readme",
+	"config": {},
 	"dependencies": {
 		"@types/fast-levenshtein": "^0.0.2",
 		"@types/inquirer": "^8.1.3",
@@ -35,5 +51,16 @@
 		"playwright-chromium": "^1.16.3",
 		"ts-node": "^10.4.0",
 		"typescript": "^4.4.4"
-	}
+	},
+	"devDependencies": {},
+	"peerDependencies": {},
+	"peerDependenciesMeta": {},
+	"bundledDependencies": [],
+	"optionalDependencies": {},
+	"engines": {},
+	"os": [],
+	"cpu": [],
+	"private": false,
+	"publishConfig": {},
+	"workspaces": []
 }
