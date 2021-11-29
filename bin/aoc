@@ -1,0 +1,70 @@
+#!env sh
+
+		# "help": "ts-node init.ts -h",
+		# "test": "echo \"Error: no test specified\" && exit 1"
+
+usage() (
+  echo "Usage: aoc <command> [command options]"
+  echo "       aoc -h"
+  echo ""
+	echo "Commands:"
+	echo "* suck [year [day]] - get input data"
+	echo "* seed - create skeleton code"
+	echo "* run [year [day]] - run the solution code"
+	echo "* submit - submit solutions"
+	echo ""
+)
+
+while getopts ":h" opt; do
+  case ${opt} in
+    h ) # help
+      usage
+			exit 1
+      ;;
+
+    \? )
+      echo "invalid option -${OPTARG}" 1>&2
+      usage
+			exit 1
+      ;;
+
+    : )
+      echo "option ${OPTARG} requires an argument" 1>&2
+      usage
+			exit 1
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+COMMAND=$1
+if [[ -z ${COMMAND} ]]; then
+	usage
+	exit 1
+fi
+
+shift 1
+
+case ${COMMAND} in
+	run )
+		ts-node run.ts $@
+		;;
+
+	seed )
+		ts-node init.ts seed $@
+		;;
+
+	submit )
+		ts-node submit.ts $@
+		;;
+
+	suck )
+		ts-node init.ts suck $@
+		;;
+
+	* )
+		echo "invalid command ${COMMAND}" 1>&2
+		usage
+		exit 1
+		;;
+esac
