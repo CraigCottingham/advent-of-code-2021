@@ -8,7 +8,7 @@ usage() (
   echo "       aoc -h"
   echo ""
 	echo "Commands:"
-	echo "* suck [year] - get input data for year (or all years if omitted)"
+	echo "* suck [year] - get input data for year (or 'all', or current year if omitted)"
 	echo "* seed - create skeleton code"
 	echo "* run [year [day]] - run the solution code"
 	echo "* submit - submit solutions"
@@ -64,9 +64,7 @@ case ${COMMAND} in
 		if [[ -n $YEAR ]]; then
 			ts-node init.ts suck -y $YEAR $*
 		else
-			for YEAR in {2015..2020}; do
-				ts-node init.ts suck -y $YEAR $*
-			done
+			ts-node init.ts suck $*
 		fi
 		;;
 
