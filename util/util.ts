@@ -1,8 +1,7 @@
-import * as path from "path";
-import * as fs from "fs/promises";
 import crypto from "crypto";
 import { existsSync } from "fs";
-import { fileURLToPath } from "url";
+import * as fs from "fs/promises";
+import * as path from "path";
 
 /**
  * Helper to run multiple search-and-replace operations within a string.
@@ -140,9 +139,9 @@ export function bigIntMod(_a: number | bigint, _n: number | bigint) {
  * JavaScript's % operator is the remainder operator rather than the modulus
  * operator. This function implements modulus, which produces different results
  * than % for negative values. Use this instead of % for most cases.
- * @param a 
- * @param n 
- * @returns 
+ * @param a
+ * @param n
+ * @returns
  */
 export function mod(a: number, n: number) {
 	return ((a % n) + n) % n;
@@ -253,9 +252,9 @@ export function powerSet<T>(inputArr: T[], settings: { proper?: boolean; nonEmpt
 
 /**
  * I don't remember exactly what this does.
- * @param elems 
- * @param target 
- * @param level 
+ * @param elems
+ * @param target
+ * @param level
  */
 // Note: doesn't work great for duplicate values in the input array
 export function* getSumSubsets(elems: number[], target: number, level: number = 0): Generator<number[] | undefined> {
@@ -323,9 +322,9 @@ export function countUniqueElements(
 /**
  * For a given array, find the "maximum" element and return its index,
  * numerical value, and original value.
- * @param arr 
+ * @param arr
  * @param toNumber A function to convert array elements to numbers
- * @returns 
+ * @returns
  */
 export function max<T>(arr: T[], toNumber: (elem: T) => number = Number) {
 	let maxIndex = -1;
@@ -345,9 +344,9 @@ export function max<T>(arr: T[], toNumber: (elem: T) => number = Number) {
 /**
  * For a given array, find the "minimum" element and return its index,
  * numerical value, and original value.
- * @param arr 
+ * @param arr
  * @param toNumber A function to convert array elements to numbers
- * @returns 
+ * @returns
  */
 export function min<T>(arr: T[], toNumber: (elem: T) => number = Number) {
 	let minIndex = -1;
@@ -366,11 +365,23 @@ export function min<T>(arr: T[], toNumber: (elem: T) => number = Number) {
 
 /**
  * Returns the MD5 digest of the given string as a hexadecimal string.
- * @param input 
- * @returns 
+ * @param input
+ * @returns
  */
 export function md5(input: string) {
 	const hash = crypto.createHash("md5");
 	hash.update(input);
 	return hash.digest("hex");
+}
+
+export function numberify(input: string) {
+	return input.trim().split(/\s+/).map(Number)
+}
+
+// https://stackoverflow.com/a/59322890/688981
+export function windows<T>(arr: T[], size: number): T[][] {
+	return Array.from(
+    {length: arr.length - (size - 1)},
+    (_, index) => arr.slice(index, index + size)
+  );
 }
