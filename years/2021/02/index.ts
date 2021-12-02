@@ -41,7 +41,34 @@ async function p2021day2_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day2_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	let h = 0;
+	let v = 0;
+	let aim = 0;
+
+	util.lineify(input).forEach((s) => {
+		const instruction = s.match(/(forward|down|up)\s+(\d+)/);
+		if (instruction) {
+			const direction = instruction[1];
+			const amount = Number(instruction[2]);
+
+			switch (direction) {
+				case "forward":
+					h += amount;
+					v += (aim * amount);
+					break;
+
+				case "down":
+					aim += amount;
+					break;
+
+				case "up":
+					aim -= amount;
+					break;
+			}
+		}
+	});
+
+	return `${h * v}`;
 }
 
 async function run() {
@@ -58,7 +85,19 @@ forward 2
 			expected: "150"
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: `
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+			`,
+			expected: "900"
+		}
+	];
 
 	// Run tests
 	test.beginTests();
