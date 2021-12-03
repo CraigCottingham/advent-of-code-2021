@@ -21,7 +21,12 @@ async function p{year}day{day}_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [
+//		{
+//			input: "",
+//			expected: ""
+//		}
+	];
 	const part2tests: TestCase[] = [];
 
 	// Run tests

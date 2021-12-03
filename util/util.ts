@@ -378,8 +378,8 @@ export function lineify(input: string) {
 	return input.trim().split(/\n+/).map((s) => s.trim())
 }
 
-export function numberify(input: string) {
-	return input.trim().split(/\s+/).map(Number)
+export function numberify(input: string, radix = 10) {
+	return input.trim().split(/\s+/).map((s) => parseInt(s, radix))
 }
 
 // https://stackoverflow.com/a/59322890/688981
