@@ -61,7 +61,37 @@ async function p2021day4_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day4_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const matchData = input.trim().match(/^(\S+)\s+(.+)$/sm)
+	if (!matchData) {
+		return "no match in input"
+	}
+
+	const drawStr = matchData[1]
+	const boardStrs = matchData[2].split(/\n\n+/)
+
+	const draws = drawStr.split(",").map(Number)
+	const boards: Board[] = boardStrs.map((s) => s.trim().split(/\s+/).map(Number))
+
+	let solution = undefined
+	for (let i = 0; i < draws.length; ++i) {
+		const draw = draws[i]
+		for (let j = 0; j < boards.length; ++j) {
+			const board = boards[j]
+			if (board.length) {
+				const index = board.indexOf(draw)
+				if (index >= 0) {
+					board[index] = undefined
+					if (isWinner(board)) {
+						const remaining = board.reduce((acc: number, n: Square) => acc + (n || 0), 0)
+						solution = draw * remaining
+						boards[j] = []
+					}
+				}
+			}
+		}
+	}
+
+	return solution
 }
 
 function isWinner(board: Board): boolean {
@@ -70,10 +100,7 @@ function isWinner(board: Board): boolean {
 	})
 }
 
-async function run() {
-	const part1tests: TestCase[] = [
-		{
-			input: `
+const testData = `
 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
@@ -93,11 +120,21 @@ async function run() {
 18  8 23 26 20
 22 11 13  6  5
  2  0 12  3  7
-			`,
+`
+
+async function run() {
+	const part1tests: TestCase[] = [
+		{
+			input: testData,
 			expected: "4512"
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: testData,
+			expected: "1924"
+		}
+	];
 
 	// Run tests
 	test.beginTests();
