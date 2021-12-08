@@ -380,7 +380,7 @@ export function lineify(input: string): string[] {
 }
 
 export function numberify(input: string, radix = 10): number[] {
-	return input.trim().split(/\s+/).map((s) => parseInt(s, radix))
+	return input.trim().split(/[,\s]+/).map((s) => parseInt(s, radix))
 }
 
 export function segmentify(input: string, separator = /\s+->\s+/): Flatten.Segment[] {

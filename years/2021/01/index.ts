@@ -25,9 +25,7 @@ async function p2021day1_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [
-		{
-			input: `
+	const testData = `
 199
 200
 208
@@ -37,23 +35,16 @@ async function run() {
 240
 269
 260
-263`,
+263`
+	const part1tests: TestCase[] = [
+		{
+			input: testData,
 			expected: "7"
 		}
 	];
 	const part2tests: TestCase[] = [
 		{
-			input: `
-199
-200
-208
-210
-200
-207
-240
-269
-260
-263`,
+			input: testData,
 			expected: "5"
 		}
 	];

@@ -72,29 +72,23 @@ async function p2021day2_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [
-		{
-			input: `
+	const testData = `
 forward 5
 down 5
 forward 8
 up 3
 down 8
 forward 2
-			`,
+`
+	const part1tests: TestCase[] = [
+		{
+			input: testData,
 			expected: "150"
 		}
 	];
 	const part2tests: TestCase[] = [
 		{
-			input: `
-forward 5
-down 5
-forward 8
-up 3
-down 8
-forward 2
-			`,
+			input: testData,
 			expected: "900"
 		}
 	];
