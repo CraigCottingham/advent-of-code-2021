@@ -91,9 +91,7 @@ function initCounters(width: number): [number, number][] {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [
-		{
-			input: `
+	const testData = `
 00100
 11110
 10110
@@ -106,27 +104,17 @@ async function run() {
 11001
 00010
 01010
-			`,
+`
+	const part1tests: TestCase[] = [
+		{
+			input: testData,
 			expected: "198",
 			extraArgs: [ 5 ]		// width of input numbers, in bits
 		}
 	]
 	const part2tests: TestCase[] = [
 		{
-			input: `
-00100
-11110
-10110
-10111
-10101
-01111
-00111
-11100
-10000
-11001
-00010
-01010
-			`,
+			input: testData,
 			expected: "230",
 			extraArgs: [ 5 ]		// width of input numbers, in bits
 		}
