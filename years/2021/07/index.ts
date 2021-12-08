@@ -16,7 +16,7 @@ async function p2021day7_part1(input: string, ...params: any[]): Promise<string>
 	const position = params[0]
 
 	if (position !== undefined) {
-		return totalFuelToPosition(data, position).toString()
+		return constantFuelToPosition(data, position).toString()
 	}
 
 	const min = util.min(data).value
@@ -24,7 +24,7 @@ async function p2021day7_part1(input: string, ...params: any[]): Promise<string>
 	let minFuel = max * data.length
 
 	for (let p = min; p <= max; ++p) {
-		const fuel = totalFuelToPosition(data, p)
+		const fuel = constantFuelToPosition(data, p)
 		if (fuel < minFuel) { minFuel = fuel }
 		if (fuel > minFuel) { break }
 	}
@@ -33,11 +33,36 @@ async function p2021day7_part1(input: string, ...params: any[]): Promise<string>
 }
 
 async function p2021day7_part2(input: string, ...params: any[]): Promise<string> {
-	return "Not implemented"
+	const data = util.numberify(input)
+	const position = params[0]
+
+	if (position !== undefined) {
+		return linearFuelToPosition(data, position).toString()
+	}
+
+	const min = util.min(data).value
+	const max = util.max(data).value
+	let minFuel = arithmeticSeries(max) * data.length
+
+	for (let p = min; p <= max; ++p) {
+		const fuel = linearFuelToPosition(data, p)
+		if (fuel < minFuel) { minFuel = fuel }
+		if (fuel > minFuel) { break }
+	}
+
+	return `${minFuel}`
 }
 
-function totalFuelToPosition(data: number[], position: number): number {
-	return data.map((p: number) => Math.abs(p - position)).reduce((acc: number, p: number) => acc + p)
+function arithmeticSeries(n: number): number {
+	return n * (1 + n) / 2
+}
+
+function constantFuelToPosition(data: number[], position: number): number {
+	return data.map((p: number) => Math.abs(p - position)).reduce((acc: number, f: number) => acc + f)
+}
+
+function linearFuelToPosition(data: number[], position: number): number {
+	return data.map((p: number) => arithmeticSeries(Math.abs(p - position))).reduce((acc: number, f: number) => acc + f)
 }
 
 async function run() {
@@ -70,7 +95,23 @@ async function run() {
 			// no extra arg means find the minimum
 		}
 	]
-	const part2tests: TestCase[] = []
+	const part2tests: TestCase[] = [
+		{
+			input: testData,
+			expected: "206",
+			extraArgs: [ 2 ]		// position on which to align
+		},
+		{
+			input: testData,
+			expected: "168",
+			extraArgs: [ 5 ]		// position on which to align
+		},
+		{
+			input: testData,
+			expected: "168",
+			// no extra arg means find the minimum
+		}
+	]
 
 	// Run tests
 	test.beginTests()
