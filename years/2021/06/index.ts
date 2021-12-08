@@ -32,7 +32,23 @@ async function p2021day6_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day6_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	const data = util.numberify(input)
+	const days = params[0] || 256
+	const timers = new Array()
+
+	for (let i = 0; i < 9; ++i) {
+		timers[i] = 0
+	}
+
+	data.forEach((i) => ++timers[i])
+
+	for (let i = 0; i < days; ++i) {
+		const spawning = timers.shift()
+		timers.push(spawning)
+		timers[6] += spawning
+	}
+
+	return timers.reduce((acc, n) => acc + n, 0)
 }
 
 async function run() {
@@ -49,7 +65,13 @@ async function run() {
 			extraArgs: [ 80 ]		// days to run simulation
 		}
 	]
-	const part2tests: TestCase[] = []
+	const part2tests: TestCase[] = [
+		{
+			input: testData,
+			expected: "26984457539",
+			extraArgs: [ 256 ]	// days to run simulation
+		}
+	]
 
 	// Run tests
 	test.beginTests()
