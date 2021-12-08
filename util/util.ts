@@ -397,10 +397,15 @@ export function replacer(_key: any, value: any) {
   if (value instanceof Map) {
     return {
       dataType: 'Map',
-      value: Array.from(value.entries()), // or with spread: value: [...value]
-    };
+      value: Array.from(value.entries())
+    }
+	} else if (value instanceof Set) {
+		return {
+			dataType: 'Set',
+			value: Array.from(value.entries()).map(([k, _v]) => k)
+		}
   } else {
-    return value;
+    return value
   }
 }
 
