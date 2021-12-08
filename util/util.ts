@@ -1,7 +1,8 @@
-import crypto from "crypto";
-import { existsSync } from "fs";
-import * as fs from "fs/promises";
-import * as path from "path";
+import Flatten from "@flatten-js/core"
+import crypto from "crypto"
+import { existsSync } from "fs"
+import * as fs from "fs/promises"
+import * as path from "path"
 
 /**
  * Helper to run multiple search-and-replace operations within a string.
@@ -374,12 +375,33 @@ export function md5(input: string) {
 	return hash.digest("hex");
 }
 
-export function lineify(input: string) {
+export function lineify(input: string): string[] {
 	return input.trim().split(/\n+/).map((s) => s.trim())
 }
 
-export function numberify(input: string, radix = 10) {
+export function numberify(input: string, radix = 10): number[] {
 	return input.trim().split(/\s+/).map((s) => parseInt(s, radix))
+}
+
+export function segmentify(input: string, separator = /\s+->\s+/): Flatten.Segment[] {
+	return input.trim().split(/\n+/).map((s) => {
+		const [p1, p2] = s.split(separator, 2).map((p) => {
+			const [x, y] = p.split(/,/, 2).map((n) => parseInt(n))
+			return new Flatten.Point(x, y)
+		})
+		return new Flatten.Segment(p1, p2)
+	})
+}
+
+export function replacer(_key: any, value: any) {
+  if (value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from(value.entries()), // or with spread: value: [...value]
+    };
+  } else {
+    return value;
+  }
 }
 
 // https://stackoverflow.com/a/59322890/688981
@@ -387,5 +409,5 @@ export function windows<T>(arr: T[], size: number): T[][] {
 	return Array.from(
     {length: arr.length - (size - 1)},
     (_, index) => arr.slice(index, index + size)
-  );
+  )
 }

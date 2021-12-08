@@ -13,8 +13,12 @@
 	},
 	"license": "MIT",
 	"contributors": [
-		{ "author": "Craig Cottingham <craig@cottingham.net> (https://craigcottingham.github.com/)" },
-		{ "author": "Trevor Gau <t-hugs@github.com> (https://github.com/T-Hugs)" }
+		{
+			"author": "Craig Cottingham <craig@cottingham.net> (https://craigcottingham.github.com/)"
+		},
+		{
+			"author": "Trevor Gau <t-hugs@github.com> (https://github.com/T-Hugs)"
+		}
 	],
 	"main": "index.ts",
 	"bin": {},
@@ -33,6 +37,7 @@
 	},
 	"config": {},
 	"dependencies": {
+		"@flatten-js/core": "^1.3.1",
 		"@types/fast-levenshtein": "^0.0.2",
 		"@types/inquirer": "^8.1.3",
 		"@types/lodash": "^4.14.176",
