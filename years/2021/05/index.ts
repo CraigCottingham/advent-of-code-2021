@@ -45,7 +45,48 @@ async function p2021day5_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day5_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	const segments = util.segmentify(input)
+	const cells = new Map()
+
+	segments.forEach((s) => {
+		let ps = s.ps
+		let pe = s.pe
+
+		if (isHorizontal(s)) {
+			if (ps.x > pe.x) {
+				ps = s.pe
+				pe = s.ps
+			}
+
+			for (let i = ps.x; i <= pe.x; ++i) {
+				const key = `[${i},${ps.y}]`
+				cells.set(key, (cells.get(key) || 0) + 1)
+			}
+		} else if (isVertical(s)) {
+			if (ps.y > pe.y) {
+				pe = s.ps
+				ps = s.pe
+			}
+
+			for (let i = ps.y; i <= pe.y; ++i) {
+				const key = `[${ps.x},${i}]`
+				cells.set(key, (cells.get(key) || 0) + 1)
+			}
+		} else {
+			if (ps.x > pe.x) {
+				ps = s.pe
+				pe = s.ps
+			}
+			const dy = (ps.y > pe.y) ? -1 : 1
+
+			for (let x = ps.x, y = ps.y; x <= pe.x; ++x, y += dy) {
+				const key = `[${x},${y}]`
+				cells.set(key, (cells.get(key) || 0) + 1)
+			}
+		}
+	})
+
+	return Array.from(cells.entries()).filter(([_p, v]) => v > 1).length
 }
 
 function isHorizontal(s: Flatten.Segment): boolean {
@@ -76,7 +117,12 @@ async function run() {
 			expected: "5"
 		}
 	]
-	const part2tests: TestCase[] = []
+	const part2tests: TestCase[] = [
+		{
+			input: testData,
+			expected: "12"
+		}
+	]
 
 	// Run tests
 	test.beginTests()
