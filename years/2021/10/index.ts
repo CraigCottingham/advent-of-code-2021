@@ -11,7 +11,21 @@ const DAY = 10
 // data path    : /Users/ccottingham/Projects/advent-of-code/2021/years/2021/10/data.txt
 // problem url  : https://adventofcode.com/2021/day/10
 
-const illegalScore: Map<string, number> = new Map([
+const autocompleterSchedule: Map<string, number> = new Map([
+	[")", 1],
+	["]", 2],
+	["}", 3],
+	[">", 4]
+])
+
+const closingCharacters: Map<string, string> = new Map([
+	["(", ")"],
+	["[", "]"],
+	["{", "}"],
+	["<", ">"]
+])
+
+const syntaxCheckerSchedule: Map<string, number> = new Map([
 	[")", 3],
 	["]", 57],
 	["}", 1197],
@@ -19,11 +33,46 @@ const illegalScore: Map<string, number> = new Map([
 ])
 
 async function p2021day10_part1(input: string, ...params: any[]) {
-	return util.lineify(input.trim()).reduce((acc, line) => acc + scoreForLine(line), 0)
+	return util.lineify(input.trim())
+					   .reduce((acc, line) => acc + syntaxCheckerScore(line), 0)
 }
 
 async function p2021day10_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	const data = util.lineify(input.trim())
+						       .filter((line) => syntaxCheckerScore(line) == 0)
+						       .map((line) => autocompleterScore(line))
+									 .sort((a, b) => Number(a) - Number(b))
+	return data.at(data.length / 2)
+}
+
+// Autocompletion starts with syntax checking, or rather stripping valid chunks leaving an incomplete chunk.
+// The last character will be the innermost opening character. Then repeatedly
+//   1. determine the matching closing character
+//   2. push the closing character to an array
+//   3. append the closing character to the chunk
+//   4. strip valid chunks again
+//   5. if the string is not empty, go back to 1
+
+function autocompleterScore(line: string): number {
+	let incompleteLine = stripChunks(line)
+	const autocompleteSequence = new Array<string>()
+
+	while (incompleteLine.length > 0) {
+		const lastOpener = incompleteLine.at(-1)
+		if (lastOpener) {
+			const closingChar = closingCharacters.get(lastOpener)
+			if (closingChar) {
+				autocompleteSequence.push(closingChar)
+				incompleteLine = stripChunks(incompleteLine + closingChar)
+			} else {
+				break
+			}
+		} else {
+			break
+		}
+	}
+
+	return autocompleteSequence.reduce((acc, c) => acc * 5 + (autocompleterSchedule.get(c) || 0), 0)
 }
 
 // The only characters in the lines are opening and closing characters, which means that at the innermost
@@ -39,20 +88,24 @@ async function p2021day10_part2(input: string, ...params: any[]) {
 //
 // If the line is incomplete rather than corrupted, there will be no closing character, so return 0.
 
-function scoreForLine(line: string): number {
+function syntaxCheckerScore(line: string): number {
+	const badLine = stripChunks(line)
+	const badIndex = badLine.search(/[\)\]\}\>]/)
+	if (badIndex > -1) {
+		return syntaxCheckerSchedule.get(badLine.charAt(badIndex)) || 0
+	} else {
+		return 0
+	}
+}
+
+function stripChunks(line: string): string {
 	for (let i = line.length; i; --i) {
 		line = line.replaceAll(/\(\)/g, "")
 		line = line.replaceAll(/\[\]/g, "")
 		line = line.replaceAll(/\{\}/g, "")
 		line = line.replaceAll(/\<\>/g, "")
 	}
-
-	const badIndex = line.search(/[\)\]\}\>]/)
-	if (badIndex > -1) {
-		return illegalScore.get(line.charAt(badIndex)) || 0
-	} else {
-		return 0
-	}
+	return line
 }
 
 async function run() {
@@ -96,8 +149,28 @@ async function run() {
 	]
 	const part2tests: TestCase[] = [
 		{
+			input: "[({(<(())[]>[[{[]{<()<>>",
+			expected: "288957"
+		},
+		{
+			input: "[(()[<>])]({[<{<<[]>>(",
+			expected: "5566"
+		},
+		{
+			input: "(((({<>}<{<{<>}{[]{[]{}",
+			expected: "1480781"
+		},
+		{
+			input: "{<[[]]>}<{[{[{[]{()[[[]",
+			expected: "995444"
+		},
+		{
+			input: "<{([{{}}[<[[[<>{}]]]>[]]",
+			expected: "294"
+		},
+		{
 			input: testData,
-			expected: ""
+			expected: "288957"
 		}
 	]
 
