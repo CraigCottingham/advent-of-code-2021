@@ -34,7 +34,27 @@ async function p2021day11_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day11_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	const grid = new Grid({ serialized: input.trim() })
+	const cellCount = grid.rowCount * grid.colCount
+	let iterations = 0
+	let synchronized = false
+
+	while (!synchronized) {
+		++iterations
+
+		for (const cell of grid) {
+			incrementCell(cell)
+		}
+
+		const flashed = grid.getCells("*")
+		synchronized = (flashed.length === cellCount)
+
+		for (const cell of flashed) {
+			cell.setValue("0")
+		}
+	}
+
+	return iterations
 }
 
 function incrementCell(cell: Cell): Cell {
@@ -96,7 +116,7 @@ async function run() {
 	const part2tests: TestCase[] = [
 		{
 			input: testData,
-			expected: ""
+			expected: "195"
 		}
 	]
 
