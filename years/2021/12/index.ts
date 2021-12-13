@@ -47,26 +47,13 @@ class Graph {
 	}
 }
 
-function nextNodes(graph: Graph, label: string): Array<string> {
-	const node = graph.get(label)
-	return Array.from(node.neighbors)
-}
+class Solution {
+	graph: Graph
+	path: Array<string>
 
-function findAllPaths(graph: Graph, connectionPath: Array<string>, connectionPaths: Array<Array<string>>, startLabel: string, endLabel: string) {
-	const node = graph.get(startLabel)
-	for (let nextLabel of Array.from(node.neighbors)) {
-		if (nextLabel === endLabel) {
-			const temp = new Array<string>()
-			for (let node1 of connectionPath) {
-				temp.push(node1)
-			}
-			temp.push(endLabel)
-			connectionPaths.push(temp)
-		} else if (!connectionPath.includes(nextLabel) || (nextLabel === nextLabel.toUpperCase())) {
-			connectionPath.push(nextLabel)
-			findAllPaths(graph, connectionPath, connectionPaths, nextLabel, endLabel)
-			connectionPath.pop()
-		}
+	constructor(graph: Graph) {
+		this.graph = graph
+		this.path = new Array()
 	}
 }
 
@@ -82,22 +69,89 @@ async function p2021day12_part1(input: string, ...params: any[]) {
 		nodeB.addNeighbor(a)
 	}
 
-	const connectionPath = new Array<string>()
-	const connectionPaths = new Array<Array<string>>()
-	connectionPath.push("start")
-	findAllPaths(graph, connectionPath, connectionPaths, "start", "end")
+	const path = new Array<string>()
+	path.push("start")
+	const paths = new Array<Array<string>>()
+	findAllPaths(graph, path, paths, "start", "end", smallOnceAndBig)
 
-	return connectionPaths.length
+	return paths.length
 }
 
 async function p2021day12_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	const data = util.lineify(input.trim())
+	const graph = new Graph()
+
+	for (let pair of data) {
+		const [a, b] = pair.split("-")
+		const nodeA = graph.get(a)
+		const nodeB = graph.get(b)
+		nodeA.addNeighbor(b)
+		nodeB.addNeighbor(a)
+	}
+
+	const path = new Array<string>()
+	path.push("start")
+	const paths = new Array<Array<string>>()
+	findAllPaths(graph, path, paths, "start", "end", oneSmallTwiceAndBig)
+
+	// for (let path of paths) {
+	// 	console.log(`${path}`)
+	// }
+
+	return paths.length
+}
+
+function anySmallCaveVisitedTwice(path: Array<string>): boolean {
+	const counts = new Map<string, number>()
+	for (let node of path.filter((label) => label !== label.toUpperCase())) {
+		counts.set(node, (counts.get(node) || 0) + 1)
+	}
+	return Array.from(counts.values()).some((n) => n >= 2)
+}
+
+function findAllPaths(graph: Graph, path: Array<string>, solutions: Array<Array<string>>, startLabel: string, endLabel: string, nodeCanBeVisited: (path: Array<string>, nextLabel: string) => boolean) {
+	const node = graph.get(startLabel)
+	for (let nextLabel of Array.from(node.neighbors)) {
+		if (nextLabel === endLabel) {
+			const solution = Array.from(path)
+			solution.push("end")
+			solutions.push(solution)
+		} else {
+			if (nodeCanBeVisited(path, nextLabel)) {
+				path.push(nextLabel)
+				findAllPaths(graph, path, solutions, nextLabel, endLabel, nodeCanBeVisited)
+				path.pop()
+			}
+		}
+	}
+}
+
+function oneSmallTwiceAndBig(path: Array<string>, nextLabel: string): boolean {
+	if (nextLabel === "start") {
+		return false
+	}
+
+	if (nextLabel === nextLabel.toUpperCase()) {
+		return true
+	}
+
+	if (!path.includes(nextLabel)) {
+		return true
+	}
+
+	if (anySmallCaveVisitedTwice(path)) {
+		return false
+	}
+
+	return true
+}
+
+function smallOnceAndBig(path: Array<string>, nextLabel: string): boolean {
+	return !path.includes(nextLabel) || (nextLabel === nextLabel.toUpperCase())
 }
 
 async function run() {
-	const part1tests: TestCase[] = [
-		{
-			input: `
+	const data1 = `
 start-A
 start-b
 A-c
@@ -105,11 +159,8 @@ A-b
 b-d
 A-end
 b-end
-			`,
-			expected: "10"
-		},
-		{
-			input: `
+	`
+	const data2 = `
 dc-end
 HN-start
 start-kj
@@ -120,11 +171,8 @@ HN-end
 kj-sa
 kj-HN
 kj-dc
-			`,
-			expected: "19"
-		},
-		{
-			input: `
+	`
+	const data3 = `
 fs-end
 he-DX
 fs-he
@@ -143,14 +191,34 @@ he-WI
 zg-he
 pj-fs
 start-RW
-			`,
+	`
+
+	const part1tests: TestCase[] = [
+		{
+			input: data1,
+			expected: "10"
+		},
+		{
+			input: data2,
+			expected: "19"
+		},
+		{
+			input: data3,
 			expected: "226"
 		}
 	]
 	const part2tests: TestCase[] = [
 		{
-			input: "",
-			expected: ""
+			input: data1,
+			expected: "36"
+		},
+		{
+			input: data2,
+			expected: "103"
+		},
+		{
+			input: data3,
+			expected: "3509"
 		}
 	]
 
