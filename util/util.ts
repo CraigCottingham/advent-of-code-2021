@@ -375,8 +375,9 @@ export function md5(input: string) {
 	return hash.digest("hex");
 }
 
-export function lineify(input: string): string[] {
-	return input.trim().split(/\n+/).map((s) => s.trim())
+export function lineify(input: string, raw: boolean = false): string[] {
+	const splitter = raw ? /\n/ : /\n+/
+	return input.trim().split(splitter).map((s) => s.trim())
 }
 
 export function numberify(input: string, radix = 10): number[] {
