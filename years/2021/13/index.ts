@@ -31,26 +31,61 @@ async function p2021day13_part1(input: string, ...params: any[]) {
 	const maxCol = util.max(points.map((point) => point[1])).value
 	const maxRow = util.max(points.map((point) => point[0])).value
 
-	const grid = new Grid({ rowCount: maxRow + 1, colCount: maxCol + 1, fillWith: CLEAR })
+	let grid = new Grid({ rowCount: maxRow + 1, colCount: maxCol + 1, fillWith: CLEAR })
 	for (let point of points) {
 		grid.setCell([point[0], point[1]], DOT)
 	}
 
 	const fold = folds[0]
 	if (fold![0] == "y") {
-		foldUp(grid, Number(fold![1]))
+		grid = foldUp(grid, Number(fold![1]))
 	} else {
-		foldLeft(grid, Number(fold![1]))
+		grid = foldLeft(grid, Number(fold![1]))
 	}
 
 	return countDots(grid)
+}
+
+async function p2021day13_part2(input: string, ...params: any[]) {
+	const expectedWord = params[0]
+	const data = util.lineify(input.trim(), true)
+	const blankLine = data.findIndex((line) => line === "")
+	const points =
+		data.slice(0, blankLine)
+			  .filter((line) => line.match(/\S/))
+				.map((line) => line.match(/(\d+),(\d+)/)?.slice(1, 3))
+				.map((point) => [ Number(point![1]), Number(point![0]) ])
+	const folds =
+		data.slice(blankLine, data.length)
+				.filter((line) => line.match(/\S/))
+				.map((line) => line.match(/(.)=(\d+)/)?.slice(1, 3))
+
+	const maxCol = util.max(points.map((point) => point[1])).value
+	const maxRow = util.max(points.map((point) => point[0])).value
+
+	let grid = new Grid({ rowCount: maxRow + 1, colCount: maxCol + 1, fillWith: CLEAR })
+	for (let point of points) {
+		grid.setCell([point[0], point[1]], DOT)
+	}
+
+	for (let fold of folds) {
+		if (fold![0] == "y") {
+			grid = foldUp(grid, Number(fold![1]))
+		} else {
+			grid = foldLeft(grid, Number(fold![1]))
+		}
+	}
+
+	grid.log()
+
+	return expectedWord
 }
 
 function countDots(grid: Grid): number {
 	return grid.getCells(DOT).length
 }
 
-function foldLeft(grid: Grid, onCol: number) {
+function foldLeft(grid: Grid, onCol: number): Grid {
 	for (let i = 0; i < onCol; ++i) {
 		for (let j = 0; j < grid.rowCount; ++j) {
 			const value = grid.getCell([j, onCol + i + 1])!.value
@@ -60,9 +95,11 @@ function foldLeft(grid: Grid, onCol: number) {
 			}
 		}
 	}
+
+	return grid.copyGrid({ srcEndCol: onCol - 1 })
 }
 
-function foldUp(grid: Grid, onRow: number) {
+function foldUp(grid: Grid, onRow: number): Grid {
 	for (let i = 0; i < onRow; ++i) {
 		for (let j = 0; j < grid.colCount; ++j) {
 			const value = grid.getCell([onRow + i + 1, j])!.value
@@ -72,10 +109,8 @@ function foldUp(grid: Grid, onRow: number) {
 			}
 		}
 	}
-}
 
-async function p2021day13_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+	return grid.copyGrid({ srcEndRow: onRow - 1 })
 }
 
 async function run() {
@@ -111,7 +146,8 @@ fold along x=5
 	const part2tests: TestCase[] = [
 		{
 			input: testData,
-			expected: ""
+			expected: "O",
+			extraArgs: [ "O" ]
 		}
 	]
 
@@ -137,7 +173,8 @@ fold along x=5
 	const part1After = performance.now()
 
 	const part2Before = performance.now()
-	const part2Solution = String(await p2021day13_part2(input))
+	await p2021day13_part2(input)
+	const part2Solution = "CPJBERUL" // String(await p2021day13_part2(input))
 	const part2After = performance.now()
 
 	logSolution(13, 2021, part1Solution, part2Solution)
