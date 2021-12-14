@@ -1,6 +1,6 @@
-import * as util from "./util";
-import _ from "lodash";
 import chalk from "chalk";
+import _ from "lodash";
+import * as util from "./util";
 
 /**
  * Options for initializing a Grid
@@ -200,6 +200,7 @@ export class Grid {
 	 */
 	public initBlankGrid(fillWith: string | undefined) {
 		this.grid = [];
+		this.ensureSigilRegistered(fillWith ?? " ")
 		for (const i of _.range(this.numRows)) {
 			this.grid.push([]);
 			for (const j of _.range(this.numCols)) {
@@ -737,7 +738,7 @@ if (require.main === module) {
 	const myGrid = `..X..
 @.#.$
 .....
-  &  
+  &
 12345`;
 	console.log(myGrid);
 	const g = new Grid({ serialized: myGrid });
