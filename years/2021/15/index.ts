@@ -1,3 +1,4 @@
+import aStar from "a-star"
 import chalk from "chalk"
 import { performance } from "perf_hooks"
 import { Grid, GridPos } from "../../../util/grid"
@@ -12,84 +13,62 @@ const DAY = 15
 // data path    : /Users/ccottingham/Projects/advent-of-code/2021/years/2021/15/data.txt
 // problem url  : https://adventofcode.com/2021/day/15
 
-type Path = GridPos[]
-
-function borderPath(grid: Grid): Path {
-	const path: Path = []
-	for (let i = 1; i < grid.rowCount; ++i) {
-		path.push(grid.getCell([i, 0])!.position)
-	}
-	for (let j = 1; j < grid.colCount; ++j) {
-		path.push(grid.getCell([grid.rowCount - 1, j])!.position)
-	}
-	return path
-}
-
-function pathIsComplete(grid: Grid, path: Path): boolean {
-	const lastPosition = grid.getCell(path.at(-1)!)!.position
-	return (lastPosition[0] === grid.rowCount - 1) && (lastPosition[1] === grid.colCount - 1)
-}
-
-function pathRisk(grid: Grid, path: Path): number {
-	// don't add the risk for the first cell
-	return path.slice(1).reduce((acc, position) => acc + Number(grid.getCell(position)!.value), 0)
-}
-
-// Start with the total risk for the path that follows the borders of the grid
-// (either down then right, or right then down, doesn't matter which).
-//
-// One of two things must be true:
-// * the total risk for this path is the minimum total risk through the grid; or
-// * there is a path with a lower total risk.
-//
-// Once we have _a_ value for maximum total risk, we can start searching through the grid.
-// If at any point the accumulated risk is greater than or equal to the maximum total risk,
-// that path (and any which follow from it) can be abandoned.
-//
-// If we find a path with a lower total risk than the current maximum, update the current
-// maximum (and optionally filter out any paths in the stack with a higher total risk).
-
 async function p2021day15_part1(input: string, ...params: any[]) {
 	const grid = new Grid({ serialized: input.trim() })
 
-	let maxStackDepth = 0
-	let maxPathRisk = pathRisk(grid, borderPath(grid))
+	const result = aStar({
+		start: [0, 0],
+		isEnd: (node) => nodeEquals(node, endNode(grid)),
+		neighbor: (node) => grid.getCell(nodeToGridPos(node))!.neighbors().map((cell) => cell.position),
+		heuristic: (node) => manhattanDistance(node, endNode(grid)),
+		distance: (_node1, node2) => Number(grid.getCell(nodeToGridPos(node2))!.value)
+	})
 
-	let stack: Path[] = [[grid.getCell([0, 0])!.position]]
+	switch (result.status) {
+		case "success":
+			return pathRisk(grid, result.path)
 
-	while (stack.length > 0) {
-		if (stack.length > maxStackDepth) {
-			maxStackDepth = stack.length
-		}
+		case "noPath":
+			return "no path"
 
-		const path = stack.pop()! // stack.shift()! for BFS
-		if (pathRisk(grid, path) >= maxPathRisk) { continue }
-		if (pathIsComplete(grid, path)) {
-			maxPathRisk = pathRisk(grid, path)
-			stack = stack.filter((p) => pathRisk(grid, p) < maxPathRisk)
-			continue
-		}
-
-		const nextPositions =
-			grid.getCell(path.at(-1)!)!
-					.neighbors()
-					.map((cell) => cell.position)
-					.filter((pos) => path.every((visited) => {
-						return !((pos[0] == visited[0]) && (pos[1] == visited[1]))
-					}))
-
-		nextPositions.forEach((pos) => {
-			const newPath = Array.from(path)
-			newPath.push(pos)
-			stack.push(newPath)
-		})
+		case "timeout":
+			return "timeout"
 	}
 
-	return maxPathRisk
+	return `unknown status "${result.status}"`
 }
 
 async function p2021day15_part2(input: string, ...params: any[]) {
 	return "Not implemented"
+}
+
+function endNode(grid: Grid): number[] {
+	return [grid.rowCount - 1, grid.colCount - 1]
+}
+
+function manhattanDistance(position1: number[], position2: number[]): number {
+	return Math.abs(nodeRow(position2) - nodeRow(position1)) + Math.abs(nodeCol(position2) - nodeCol(position1))
+}
+
+function nodeCol(node: number[]): number {
+	return node[1]
+}
+
+function nodeEquals(node1: number[], node2: number[]): boolean {
+	return (nodeRow(node1) === nodeRow(node2)) && (nodeCol(node1) === nodeCol(node2))
+}
+
+function nodeRow(node: number[]): number {
+	return node[0]
+}
+
+function nodeToGridPos(node: number[]): GridPos {
+	return [nodeRow(node), nodeCol(node)]
+}
+
+function pathRisk(grid: Grid, path: number[][]): number {
+	// don't add the risk for the first cell
+	return path.slice(1).reduce((acc, position) => acc + Number(grid.getCell([position[0], position[1]])!.value), 0)
 }
 
 async function run() {
