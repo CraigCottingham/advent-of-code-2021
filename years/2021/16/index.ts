@@ -16,18 +16,18 @@ enum LengthMode {
 	Count = 1
 }
 
-interface Packet {
+type Packet = {
 	version: number
 	typeID: number
 }
 
 type NullablePacket = Packet | null
 
-interface Literal extends Packet {
+type Literal = Packet & {
 	value: number | undefined
 }
 
-interface Operator extends Packet {
+type Operator = Packet & {
 	mode: LengthMode
 	packets: NullablePacket[]
 }
@@ -109,7 +109,7 @@ function digitToBinary(digit: string): string {
 
 function readLiteral(bitstream: string[]): Literal {
 	const version = readNumber(bitstream, 3)
-	const typeID = readNumber(bitstream, 3)
+	readNumber(bitstream, 3)
 	let valueBits = []
 
 	while (bitstream[0] === "1") {
@@ -121,7 +121,7 @@ function readLiteral(bitstream: string[]): Literal {
 
 	return {
 		version,
-		typeID,
+		typeID: 4,
 		value: binaryToNumber(valueBits)
 	}
 }
