@@ -39,7 +39,7 @@ function track(vi: Velocity, area: Area): Point[] {
 }
 
 // Testing a single [vx, vy] pair probably doesn't take long, so we can just brute force it.
-// However, I can think of some ways to minimize the problem space. I'll try them later.
+// However, I can think of some ways to minimize the problem space. Maybe I'll try them later.
 
 async function p2021day17_part1(input: string, ...params: any[]) {
   const match = util.regexify(input.trim(), /x=([-\d]+)\.\.([-\d]+),\s+y=([-\d]+)\.\.([-\d]+)/)
@@ -77,7 +77,38 @@ async function p2021day17_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day17_part2(input: string, ...params: any[]) {
-	return "Not implemented"
+  const match = util.regexify(input.trim(), /x=([-\d]+)\.\.([-\d]+),\s+y=([-\d]+)\.\.([-\d]+)/)
+	if (!match) {
+		return "wrong regex for the input data"
+	}
+
+	const x1: number = Number(match[1])
+	const x2: number = Number(match[2])
+	const y1: number = Number(match[3])
+	const y2: number = Number(match[4])
+
+	const targetArea = {
+		topLeft: {
+			x: Math.min(x1, x2),
+			y: Math.max(y1, y2)
+		},
+		bottomRight: {
+			x: Math.max(x1, x2),
+			y: Math.min(y1, y2)
+		}
+	}
+
+	let velocities = 0
+	for (let x = 1; x <= targetArea.bottomRight.x; ++x) {
+		for (let y = targetArea.bottomRight.y; y <= 200; ++y) {
+			const points = track({ dx: x, dy: y }, targetArea)
+			if (points.some((point) => inTargetArea(point, targetArea))) {
+				velocities++
+			}
+		}
+	}
+
+	return velocities
 }
 
 async function run() {
@@ -93,7 +124,7 @@ target area: x=20..30, y=-10..-5
 	const part2tests: TestCase[] = [
 		{
 			input: testData,
-			expected: ""
+			expected: "112"
 		}
 	]
 
