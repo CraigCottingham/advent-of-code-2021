@@ -200,6 +200,7 @@ export function modInverse(_a: number | bigint, _m: number | bigint) {
 
 	return (x + m) % m;
 }
+
 export function modDivide(_a: number | bigint, _b: number | bigint, _m: number | bigint) {
 	const [a, b, m] = [_a, _b, _m].map(BigInt);
 	return (a * modInverse(b, m)) % m;
@@ -382,6 +383,10 @@ export function lineify(input: string, raw: boolean = false): string[] {
 
 export function numberify(input: string, radix = 10): number[] {
 	return input.trim().split(/[,\s]+/).map((s) => parseInt(s, radix))
+}
+
+export function regexify(input: string, regex: RegExp): RegExpExecArray | null {
+	return regex.exec(input)
 }
 
 export function segmentify(input: string, separator = /\s+->\s+/): Flatten.Segment[] {
